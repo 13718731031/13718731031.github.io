@@ -1,0 +1,887 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="php," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="1.两台机器192.168.1.2，192.168.1.3，想把192.168.1.2的数据同步到192.168.1.3中 2.测试开始，可以先关闭防火墙和内核Linux的selinux的防火墙,避免防火墙影响（两台服务器均操作） 关闭防火墙，例如centos7，其他系统版本自己查询如何关闭12$ systemctl stop firewalld.service #停止firewall  $ sy">
+<meta name="keywords" content="php">
+<meta property="og:type" content="article">
+<meta property="og:title" content="inotify+rsync安装配置 文件同步">
+<meta property="og:url" content="http://yoursite.com/2014/11/09/php/2014-11-09 inotify+rsync安装配置 文件同步/index.html">
+<meta property="og:site_name" content="bingliang&#39;blog">
+<meta property="og:description" content="1.两台机器192.168.1.2，192.168.1.3，想把192.168.1.2的数据同步到192.168.1.3中 2.测试开始，可以先关闭防火墙和内核Linux的selinux的防火墙,避免防火墙影响（两台服务器均操作） 关闭防火墙，例如centos7，其他系统版本自己查询如何关闭12$ systemctl stop firewalld.service #停止firewall  $ sy">
+<meta property="og:updated_time" content="2017-10-03T11:24:42.650Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="inotify+rsync安装配置 文件同步">
+<meta name="twitter:description" content="1.两台机器192.168.1.2，192.168.1.3，想把192.168.1.2的数据同步到192.168.1.3中 2.测试开始，可以先关闭防火墙和内核Linux的selinux的防火墙,避免防火墙影响（两台服务器均操作） 关闭防火墙，例如centos7，其他系统版本自己查询如何关闭12$ systemctl stop firewalld.service #停止firewall  $ sy">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2014/11/09/php/2014-11-09 inotify+rsync安装配置 文件同步/"/>
+
+
+
+
+
+  <title>inotify+rsync安装配置 文件同步 | bingliang'blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?99498c2ea679aa119d9d8cad6ce313d2";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">bingliang'blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冫水 冫京</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2014/11/09/php/2014-11-09 inotify+rsync安装配置 文件同步/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="liuzhixiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="bingliang'blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">inotify+rsync安装配置 文件同步</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2014-11-09T00:00:00+08:00">
+                2014-11-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/php/" itemprop="url" rel="index">
+                    <span itemprop="name">php</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2014/11/09/php/2014-11-09 inotify+rsync安装配置 文件同步/" class="leancloud_visitors" data-flag-title="inotify+rsync安装配置 文件同步">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>1.两台机器192.168.1.2，192.168.1.3，想把192.168.1.2的数据同步到192.168.1.3中</p>
+<p>2.测试开始，可以先关闭防火墙和内核Linux的selinux的防火墙,避免防火墙影响（两台服务器均操作）</p>
+<p>关闭防火墙，例如centos7，其他系统版本自己查询如何关闭<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ systemctl stop firewalld.service #停止firewall  </div><div class="line">$ systemctl disable firewalld.service #禁止firewall开机启动</div></pre></td></tr></table></figure></p>
+<p>关闭linux的selinux防火墙</p>
+<p>永久性关闭：生效需要重启</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ vi /etc/selinux/config  </div><div class="line">SELINUX=disabled</div></pre></td></tr></table></figure>
+<p>临时性关闭：生效无需重启</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ setenforce 0</div></pre></td></tr></table></figure>
+<p>3.安装rsync（两台服务器均操作）</p>
+<p>前往rsync官网下载最新版本 <a href="http://rsync.samba.org/ftp/rsync/src" target="_blank" rel="external">http://rsync.samba.org/ftp/rsync/src</a>  找到最新的rsync-<em>.</em>.*.tar.gz<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ tar zxvf rsync-*.*.*.tar.gz  </div><div class="line">$ cd rsync-*.*.*  </div><div class="line">$ ./configure --prefix=/usr/local/rsync  </div><div class="line">$ make &amp;&amp; make install</div></pre></td></tr></table></figure></p>
+<p>4.配置rsyncd.conf (192.168.1.3)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">#pid文件的存放位置  </div><div class="line">pid file = /var/run/rsync.pid  </div><div class="line">#日志文件位置，启动rsync后自动产生这个文件，无需提前创建  </div><div class="line">log file = /var/log/rsync.log  </div><div class="line">#支持max connections参数的锁文件  </div><div class="line">lock file=/var/run/rsync.lock  </div><div class="line">#用户认证配置文件，里面保存用户名称和密码  </div><div class="line">secrets file = /etc/rsync.pw  </div><div class="line">#rsync启动时欢迎信息页面文件位置  </div><div class="line">motd file = /etc/rsyncd.motd  </div><div class="line">transfer logging = yes  </div><div class="line">log format = %t %a %m %f %b  </div><div class="line">syslog facility = local3  </div><div class="line">#自定义名称  </div><div class="line">[data]  </div><div class="line">#设置需要同步的目录  </div><div class="line">path = /data/test/  </div><div class="line">#模块名称与[data]自定义名称相同  </div><div class="line">comment = data  </div><div class="line">exclude = blank.png ; spinner.gif ; downsimple.png ; rails.png ; WEB-INF/  </div><div class="line">#默认端口  </div><div class="line">port = 873  </div><div class="line">#设置rsync运行权限为root  </div><div class="line">uid = root  </div><div class="line">#设置rsync运行权限为root  </div><div class="line">gid = root  </div><div class="line">#设置超时时间  </div><div class="line">timeout = 600  </div><div class="line">#最大连接数  </div><div class="line">max connections = 200  </div><div class="line">#默认为true，修改为no，增加对目录文件软连接的备份  </div><div class="line">use chroot = no  </div><div class="line">#设置rsync服务端文件为读写权限  </div><div class="line">read only = no  </div><div class="line">#不显示rsync服务端资源列表  </div><div class="line">list = no  </div><div class="line">#允许进行数据同步的客户端IP地址  </div><div class="line">hosts allow = 192.168.1.2</div></pre></td></tr></table></figure></p>
+<p>4.可选：可以设置多个目录(192.168.1.3)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">#增加test1目录  </div><div class="line">[test1]  </div><div class="line">path = /data/test1  </div><div class="line">list = yes  </div><div class="line">ignore errors  </div><div class="line">comment = ucweb-file system  </div><div class="line">secrets file = /etc/rsync.pw  </div><div class="line">exclude = blank.png ; spinner.gif ; downsimple.png ; rails.png ; WEB-INF/</div></pre></td></tr></table></figure></p>
+<p>5.建立密码认证文件(192.168.1.3)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ vi /etc/rsync.pw  </div><div class="line">root:123456</div></pre></td></tr></table></figure>
+<p>配置rsyncd.motd文件，开始传送的时候会显示（192.168.1.3）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$ vi /etc/rsyncd.motd  </div><div class="line">###############################  </div><div class="line">#                             #  </div><div class="line">#        start rsync          #  </div><div class="line">#                             #  </div><div class="line">###############################</div></pre></td></tr></table></figure></p>
+<p>5.启动rsync（两台服务器均操作）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ /usr/local/rsync/bin/rsync --daemon --config=/etc/rsyncd.conf</div></pre></td></tr></table></figure></p>
+<p>开机启动rsync<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ echo &apos;/usr/local/rsync/bin/rsync --daemon --config=/etc/rsyncd.conf&apos;&gt;&gt;/etc/rc.d/rc.local</div></pre></td></tr></table></figure></p>
+<p>6.建立密码认证文件（192.168.1.2）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ vi /etc/rsync.pw  </div><div class="line">123456</div></pre></td></tr></table></figure></p>
+<p>7.测试开始（在192.168.1.2）</p>
+<p>先打开192.168.1.2上的/data/test/创建一个test.PHP测试文件，执行下面的命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ /usr/local/rsync/bin/rsync -avH --port=873 --progress --delete /data/test/ root@192.168.1.3::data --password-file=/etc/rsync.pw</div></pre></td></tr></table></figure></p>
+<p>查看192.168.1.3上/data/test目录下是否有同步过来的test.php</p>
+<p>8.安装inotify-tools（192.168.1.2）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ wget https://cloud.github.com/downloads/rvoicilas/inotify-tools/inotify-tools-3.14.tar.gz  </div><div class="line">$ tar zxvf inotify-tools-3.14.tar.gz   </div><div class="line">$ cd inotify-tools-3.14  </div><div class="line">$ ./configure --prefix=/usr/local/inotify  </div><div class="line">$ make &amp;&amp; make install</div></pre></td></tr></table></figure></p>
+<p>9.查看是否安装成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ll /usr/local/inotify/bin/inotifywa*</div></pre></td></tr></table></figure></p>
+<p>10.新建一个inotify.sh设置文件同步/root/inotify.sh,如果下面代码不管用可参考<a href="https://github.com/rvoicilas/inotify-tools/wiki#info" target="_blank" rel="external">https://github.com/rvoicilas/inotify-tools/wiki#info</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">		#!/bin/sh</div><div class="line"></div><div class="line"></div><div class="line"># get the current path</div><div class="line">CURPATH=`pwd`</div><div class="line"></div><div class="line"></div><div class="line">/usr/local/inotify/bin/inotifywait -mr --timefmt &apos;%d/%m/%y %H:%M&apos; --format &apos;%T %w %f&apos; \</div><div class="line">-e close_write /data/test | while read date time dir file; do</div><div class="line"></div><div class="line"></div><div class="line">       FILECHANGE=$&#123;dir&#125;$&#123;file&#125;</div><div class="line">       # convert absolute path to relative</div><div class="line">       FILECHANGEREL=`echo &quot;$FILECHANGE&quot; | sed &apos;s_&apos;$CURPATH&apos;/__&apos;`</div><div class="line"></div><div class="line"></div><div class="line">       rsync -avH --port=873 --progress --delete /data/test/ root@192.168.1.3::data --password-file=/etc/rsync.pw</div><div class="line">        echo &quot;At $&#123;time&#125; on $&#123;date&#125;, file $FILECHANGE was backed up via rsync&quot;</div><div class="line">done</div></pre></td></tr></table></figure>
+<p>11.可执行权限与后台无输出运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">chmod 777 /root/inotify.sh</div><div class="line"></div><div class="line">		sh /root/inotify.sh &gt;/dev/null 2&gt;&amp;1 &amp;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/11/02/php/2014-11-02 PHP运算逻辑说明/" rel="next" title="PHP运算逻辑说明">
+                <i class="fa fa-chevron-left"></i> PHP运算逻辑说明
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2014/11/16/php/2014-11-16 memcache(一)基础篇/" rel="prev" title="memcache(一)基础篇">
+                memcache(一)基础篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.JPG"
+               alt="liuzhixiang" />
+          <p class="site-author-name" itemprop="name">liuzhixiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">善於跌倒仍喜爱奔跑</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/13718731031" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liuzhixiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("c7zjIJGynOGIO7TGFutkhgQP-gzGzoHsz", "W6mSoBuzpKF1kgOYVUsukis6");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
