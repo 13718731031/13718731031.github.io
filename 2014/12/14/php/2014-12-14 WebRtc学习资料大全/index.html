@@ -1,0 +1,926 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Roboto Slab:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="php," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="有些需要翻墙才能看 WebRTC 介绍 官网在这里：    https://webrtc.org/ 然后这里有一个官方的Getting Started：    https://webrtc.org/start/ Google关于WebRTC的幻灯片：    http://io13webrtc.appspot.com/ 然后是WebRTC的SPEC：    https://www.w3.org/TR">
+<meta name="keywords" content="php">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebRtc学习资料大全">
+<meta property="og:url" content="http://yoursite.com/2014/12/14/php/2014-12-14 WebRtc学习资料大全/index.html">
+<meta property="og:site_name" content="bingliang&#39;blog">
+<meta property="og:description" content="有些需要翻墙才能看 WebRTC 介绍 官网在这里：    https://webrtc.org/ 然后这里有一个官方的Getting Started：    https://webrtc.org/start/ Google关于WebRTC的幻灯片：    http://io13webrtc.appspot.com/ 然后是WebRTC的SPEC：    https://www.w3.org/TR">
+<meta property="og:updated_time" content="2017-10-07T15:49:30.458Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="WebRtc学习资料大全">
+<meta name="twitter:description" content="有些需要翻墙才能看 WebRTC 介绍 官网在这里：    https://webrtc.org/ 然后这里有一个官方的Getting Started：    https://webrtc.org/start/ Google关于WebRTC的幻灯片：    http://io13webrtc.appspot.com/ 然后是WebRTC的SPEC：    https://www.w3.org/TR">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2014/12/14/php/2014-12-14 WebRtc学习资料大全/"/>
+
+
+
+
+
+  <title>WebRtc学习资料大全 | bingliang'blog</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?99498c2ea679aa119d9d8cad6ce313d2";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">bingliang'blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">冫水 冫京</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2014/12/14/php/2014-12-14 WebRtc学习资料大全/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="liuzhixiang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="bingliang'blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">WebRtc学习资料大全</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2014-12-14T00:00:00+08:00">
+                2014-12-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/php/" itemprop="url" rel="index">
+                    <span itemprop="name">php</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2014/12/14/php/2014-12-14 WebRtc学习资料大全/" class="leancloud_visitors" data-flag-title="WebRtc学习资料大全">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>有些需要翻墙才能看</p>
+<p>WebRTC 介绍</p>
+<p>官网在这里：<br>    <a href="https://webrtc.org/" target="_blank" rel="external">https://webrtc.org/</a></p>
+<p>然后这里有一个官方的Getting Started：<br>    <a href="https://webrtc.org/start/" target="_blank" rel="external">https://webrtc.org/start/</a></p>
+<p>Google关于WebRTC的幻灯片：<br>    <a href="http://io13webrtc.appspot.com/" target="_blank" rel="external">http://io13webrtc.appspot.com/</a></p>
+<p>然后是WebRTC的SPEC：<br>    <a href="https://www.w3.org/TR/webrtc/" target="_blank" rel="external">https://www.w3.org/TR/webrtc/</a></p>
+<p>WebRTC项目源码地址：<br>    <a href="https://chromium.googlesource.com/external/webrtc" target="_blank" rel="external">https://chromium.googlesource.com/external/webrtc</a></p>
+<p>Native开发文档：<br>    <a href="https://webrtc.org/native-code/development/" target="_blank" rel="external">https://webrtc.org/native-code/development/</a></p>
+<p>教程</p>
+<p>入门的，首选codelabs的Real time communication with WebRTC：<br>    <a href="https://codelabs.developers.google.com/codelabs/webrtc-web" target="_blank" rel="external">https://codelabs.developers.google.com/codelabs/webrtc-web</a></p>
+<p>然后是html5rocks上的基础教程：<br>    <a href="https://www.html5rocks.com/en/tutorials/webrtc/basics/" target="_blank" rel="external">https://www.html5rocks.com/en/tutorials/webrtc/basics/</a></p>
+<p>开发文档、入门教程，参考这里：<br>    <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/WebRTC/Peer-to-peer_communications_with_WebRTC" target="_blank" rel="external">https://developer.mozilla.org/en-US/docs/Web/Guide/API/WebRTC/Peer-to-peer_communications_with_WebRTC</a></p>
+<p>这里，<a href="http://piratefsh.github.io/projects/2015/08/27/webrtc-stun-turn-servers.html" target="_blank" rel="external">http://piratefsh.github.io/projects/2015/08/27/webrtc-stun-turn-servers.html</a> 是一个人部署stun和turn server的记录。</p>
+<p>进阶一点的，看这个，比较完整的介绍和实践：<br>    <a href="http://blog.mgechev.com/2014/12/26/multi-user-video-conference-webrtc-angularjs-yeoman/" target="_blank" rel="external">http://blog.mgechev.com/2014/12/26/multi-user-video-conference-webrtc-angularjs-yeoman/</a></p>
+<p>还有这个，介绍如何用WebRTC一步一步实现视频会议：<br>    <a href="https://www.cleveroad.com/blog/webrtc-step-by-step-implementation-of-video-conference" target="_blank" rel="external">https://www.cleveroad.com/blog/webrtc-step-by-step-implementation-of-video-conference</a></p>
+<p>还找到一个中文版的教程，通过WebRTC实现实时视频通信：</p>
+<ul>
+<li>通过WebRTC实现实时视频通信（一）</li>
+<li>通过WebRTC实现实时视频通信（二）</li>
+<li>通过WebRTC实现实时视频通信（三）</li>
+</ul>
+<p>STUN/TURN/Signaling解决方案</p>
+<p>WebRTC需要Signaling、STUN、TURN等Server，Google有自己的，还有很多开源的，也有收费的。</p>
+<p>免费的：</p>
+<ul>
+<li><p>Signaling Server需要自己实现，如果你用Nodejs和Socket.io的话，比较容易做。<a href="https://codelabs.developers.google.com/codelabs/webrtc-web" target="_blank" rel="external">https://codelabs.developers.google.com/codelabs/webrtc-web</a> 这里就有一个示例。</p>
+</li>
+<li><p>Google的STUN服务器：stun:stun.l.google.com:19302</p>
+</li>
+<li><p>restund：<a href="http://www.creytiv.com/restund.html。" target="_blank" rel="external">http://www.creytiv.com/restund.html。</a></p>
+</li>
+<li><p>rfc5766-turn-server: <a href="https://code.google.com/p/rfc5766-turn-server" target="_blank" rel="external">https://code.google.com/p/rfc5766-turn-server</a> 挪到这里了：<a href="https://github.com/coturn/rfc5766-turn-server/" target="_blank" rel="external">https://github.com/coturn/rfc5766-turn-server/</a> 支持STUN和TURN</p>
+</li>
+<li><p><a href="http://www.pjsip.org/" target="_blank" rel="external">http://www.pjsip.org/</a>, PJSIP，支持STUN、TURN、ICE。</p>
+</li>
+<li><p><a href="https://nice.freedesktop.org/wiki/" target="_blank" rel="external">https://nice.freedesktop.org/wiki/</a> ，libnice，支持ICE和STUN。</p>
+</li>
+<li><p><a href="http://www.stunprotocol.org/" target="_blank" rel="external">http://www.stunprotocol.org/</a> ，STUNTMAN，对应的代码，<a href="https://github.com/jselbie/stunserver" target="_blank" rel="external">https://github.com/jselbie/stunserver</a></p>
+</li>
+<li><p><a href="https://sourceforge.net/projects/stun/" target="_blank" rel="external">https://sourceforge.net/projects/stun/</a> ，STUN client and server</p>
+</li>
+<li><p><a href="https://github.com/coturn/coturn" target="_blank" rel="external">https://github.com/coturn/coturn</a> ，C++实现的STUN和TURN服务器，这里有一个安装指南：<a href="https://www.webrtc-experiment.com/docs/TURN-server-installation-guide.html" target="_blank" rel="external">https://www.webrtc-experiment.com/docs/TURN-server-installation-guide.html</a></p>
+</li>
+</ul>
+<p>这里有一个WebRTC服务器搭建的文档：<a href="http://io.diveinedu.com/2015/02/05/%E7%AC%AC%E5%85%AD%E7%AB%A0-WebRTC%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA.html" target="_blank" rel="external">http://io.diveinedu.com/2015/02/05/%E7%AC%AC%E5%85%AD%E7%AB%A0-WebRTC%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA.html</a></p>
+<p>收费的解决方案：<br>    <a href="https://www.onsip.com/blog/webrtc-server" target="_blank" rel="external">https://www.onsip.com/blog/webrtc-server</a></p>
+<p>开源示例</p>
+<p>还有一些开源的示例代码，这个比较全了：<br>    <a href="https://github.com/webrtc/samples" target="_blank" rel="external">https://github.com/webrtc/samples</a></p>
+<p>对应的demo在这里（Chrome打开可以看效果）：<br>    <a href="https://webrtc.github.io/samples" target="_blank" rel="external">https://webrtc.github.io/samples</a></p>
+<p>回退一级，还有更多资源：<br>    <a href="https://github.com/webrtc" target="_blank" rel="external">https://github.com/webrtc</a></p>
+<p>还有一个，SimpleWebRTC：<br>    <a href="https://github.com/andyet/SimpleWebRTC" target="_blank" rel="external">https://github.com/andyet/SimpleWebRTC</a></p>
+<p>还有：<br>    <a href="https://github.com/mgechev/angular-webrtc" target="_blank" rel="external">https://github.com/mgechev/angular-webrtc</a></p>
+<p>嗯，接下来这个更赞，支持多人视频会议，开源的：<br>    <a href="https://github.com/jitsi" target="_blank" rel="external">https://github.com/jitsi</a> ，对应的演示地址<a href="https://meet.jit.si/" target="_blank" rel="external">https://meet.jit.si/</a></p>
+<p>世界上第一个基于HTML5的SIP客户端：<a href="https://www.doubango.org/sipml5/" target="_blank" rel="external">https://www.doubango.org/sipml5/</a> 。他们的GitHub主页：<a href="https://github.com/DoubangoTelecom/doubango" target="_blank" rel="external">https://github.com/DoubangoTelecom/doubango</a></p>
+<p>又找到一个国内的小示例，WebRTC实现网页版多人视频聊天室：<a href="http://www.cnblogs.com/FuzhePan/p/3899551.html" target="_blank" rel="external">http://www.cnblogs.com/FuzhePan/p/3899551.html</a> 。看样子是多人聊天室，一对一视频的实现。</p>
+<p>还有一个WebRTC native demo：<a href="http://sourcey.com/webrtc-native-to-browser-video-streaming-example/" target="_blank" rel="external">http://sourcey.com/webrtc-native-to-browser-video-streaming-example/</a> ，能够在C++的客户端和浏览器之间视频通信。</p>
+<p>在线演示</p>
+<p>搜集了一些在线演示的示例：<br>    <a href="https://apprtc.appspot.com" target="_blank" rel="external">https://apprtc.appspot.com</a><br>    <a href="http://www.simpl.info/getusermedia" target="_blank" rel="external">http://www.simpl.info/getusermedia</a><br>    <a href="https://webrtc.github.io/samples" target="_blank" rel="external">https://webrtc.github.io/samples</a><br>    <a href="http://webcamtoy.com/app/" target="_blank" rel="external">http://webcamtoy.com/app/</a><br>    <a href="http://www.shinydemos.com/facekat/" target="_blank" rel="external">http://www.shinydemos.com/facekat/</a><br>    <a href="http://idevelop.ro/ascii-camera/" target="_blank" rel="external">http://idevelop.ro/ascii-camera/</a><br>    <a href="https://meet.jit.si/" target="_blank" rel="external">https://meet.jit.si/</a> ，多人的视频会议</p>
+<p>围绕WebRTC的框架和服务</p>
+<p>框架，视频通信的：<br>    <a href="https://github.com/webrtc/adapter" target="_blank" rel="external">https://github.com/webrtc/adapter</a> ，封装了浏览器差异<br>    <a href="https://github.com/henrikjoreteg/SimpleWebRTC" target="_blank" rel="external">https://github.com/henrikjoreteg/SimpleWebRTC</a> ，前面说过这个链接了<br>    <a href="https://github.com/priologic/easyrtc" target="_blank" rel="external">https://github.com/priologic/easyrtc</a><br>    <a href="https://github.com/webRTC/webRTC.io" target="_blank" rel="external">https://github.com/webRTC/webRTC.io</a></p>
+<p>Peer间传递数据的：<br>    <a href="http://peerjs.com/" target="_blank" rel="external">http://peerjs.com/</a><br>    <a href="https://github.com/peer5/sharefest" target="_blank" rel="external">https://github.com/peer5/sharefest</a></p>
+<p>服务：<br>    <a href="http://www.tokbox.com/" target="_blank" rel="external">http://www.tokbox.com/</a><br>    <a href="http://www.vline.com/" target="_blank" rel="external">http://www.vline.com/</a></p>
+<p>RTCMultiConnection，JS封装库和Signaling服务：<br>    <a href="https://github.com/muaz-khan/RTCMultiConnection" target="_blank" rel="external">https://github.com/muaz-khan/RTCMultiConnection</a></p>
+<p>图书<br>    《Real-Time Communication with WebRTC》<br>    <a href="https://bloggeek.me/book-webrtc-salvatore-simon/" target="_blank" rel="external">https://bloggeek.me/book-webrtc-salvatore-simon/</a><br>    <a href="https://bloggeek.me/best-webrtc-book/" target="_blank" rel="external">https://bloggeek.me/best-webrtc-book/</a> ，这里介绍了5本书。</p>
+<p>课程<br>    <a href="https://bloggeek.me/course/webrtc-architecture/" target="_blank" rel="external">https://bloggeek.me/course/webrtc-architecture/</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/php/" rel="tag"># php</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/12/14/php/2014-12-21 递归实现无限极分类/" rel="next" title="递归实现无限极分类">
+                <i class="fa fa-chevron-left"></i> 递归实现无限极分类
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2014/12/28/php/2014-12-28 Lamp环境下安装及使用coreseek(linux)/" rel="prev" title="Lamp环境下安装及使用coreseek(linux)">
+                Lamp环境下安装及使用coreseek(linux) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.JPG"
+               alt="liuzhixiang" />
+          <p class="site-author-name" itemprop="name">liuzhixiang</p>
+           
+              <p class="site-description motion-element" itemprop="description">善於跌倒仍喜爱奔跑</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/13718731031" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">liuzhixiang</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("c7zjIJGynOGIO7TGFutkhgQP-gzGzoHsz", "W6mSoBuzpKF1kgOYVUsukis6");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
