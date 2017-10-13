@@ -111,17 +111,17 @@
 
 
 
-<meta name="description" content="善於跌倒仍喜爱奔跑">
+<meta name="description" content="一.首先在你的Linux上先下载一个coreseek的一个linux的安装包,由于官网的下载地址已经不存在所以这里我已经以其他渠道下载完成 打开linux首先安装如下依赖包;(如果有的话只需要更新) yum -y install m4 autoconf automake libtool    yum -y install gcc gcc-c++ wget    yum -y install mys">
 <meta name="keywords" content="php">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Lamp环境下安装及使用coreseek(linux)">
 <meta property="og:url" content="http://yoursite.com/2014/12/28/php/2014-12-28 Lamp环境下安装及使用coreseek(linux)/index.html">
 <meta property="og:site_name" content="bingliang&#39;blog">
-<meta property="og:description" content="善於跌倒仍喜爱奔跑">
-<meta property="og:updated_time" content="2017-10-07T15:55:06.818Z">
+<meta property="og:description" content="一.首先在你的Linux上先下载一个coreseek的一个linux的安装包,由于官网的下载地址已经不存在所以这里我已经以其他渠道下载完成 打开linux首先安装如下依赖包;(如果有的话只需要更新) yum -y install m4 autoconf automake libtool    yum -y install gcc gcc-c++ wget    yum -y install mys">
+<meta property="og:updated_time" content="2017-10-12T07:57:10.256Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Lamp环境下安装及使用coreseek(linux)">
-<meta name="twitter:description" content="善於跌倒仍喜爱奔跑">
+<meta name="twitter:description" content="一.首先在你的Linux上先下载一个coreseek的一个linux的安装包,由于官网的下载地址已经不存在所以这里我已经以其他渠道下载完成 打开linux首先安装如下依赖包;(如果有的话只需要更新) yum -y install m4 autoconf automake libtool    yum -y install gcc gcc-c++ wget    yum -y install mys">
 
 
 
@@ -364,17 +364,6 @@
 
           
           
-             <span id="/2014/12/28/php/2014-12-28 Lamp环境下安装及使用coreseek(linux)/" class="leancloud_visitors" data-flag-title="Lamp环境下安装及使用coreseek(linux)">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数 </span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
 
           
 
@@ -392,7 +381,111 @@
       
 
       
-        
+        <p>一.首先在你的Linux上先下载一个coreseek的一个linux的安装包,由于官网的下载地址已经不存在所以这里我已经以其他渠道下载完成</p>
+<p>打开linux首先安装如下依赖包;(如果有的话只需要更新)</p>
+<pre><code>yum -y install m4 autoconf automake libtool  
+
+yum -y install gcc gcc-c++ wget  
+
+yum -y install mysql-devel  
+</code></pre><p>##mmseg3是一个中文分词插件</p>
+<p>二.如果没有下载的话可以将根本文档带的安装包上传到linux,如果安装包已经放好</p>
+<p> 执行如下命令:</p>
+<pre><code>tar zxvf coreseek-3.2.14.tar.gz               
+&lt;span style=&quot;font-family:Calibri;&quot;&gt;                #  &lt;/span&gt;解压命令&lt;pre name=&quot;code&quot; class=&quot;python&quot;&gt;make  
+make install  
+
+cd /usr/local/coreseek/etc                         #进入coreseek安装完成的路径  
+&lt;pre name=&quot;code&quot; class=&quot;python&quot;&gt;cd coreseek-3.2.14                                 # 进入目录  
+cd mmseg-3.2.14/                                   # 进入中文分词插件  
+./bootstrap ./configure --prefix=/usr/local/mmseg3 # 检测配置  
+make &amp;&amp; make install                               #编译 &amp;&amp; 编译安装  
+cd ../csft-3.2.14/                                 # 进入配置目录  
+sh buildconf.sh                                    # 执行脚本  
+./configure --prefix=/usr/local/coreseek  
+ --without-python --without-unixodbc --with-mmseg  
+ --with-mmseg-includes=/usr/local/mmseg3/include/mmseg/   
+--with-mmseg-libs=/usr/local/mmseg3/lib/ --with-mysql --host=arm   #检测配置  
+</code></pre><p>三.安装过程需要修改一个配置文件</p>
+<pre><code>vi src/sphinxexpr.cpp  
+</code></pre><p>四.然后将所有的T val = ExprEval ( this-&gt;m_pArg, tMatch )…..修改为:  T val = this-&gt;ExprEval ( this-&gt;m_pArg, tMatch )(建议大家将此文件拿到本地进行修改)</p>
+<pre><code>make  
+make install  
+cd /usr/local/coreseek/etc                         #进入coreseek安装完成的路径  
+</code></pre><p>五.输入ls会看到3个文件:</p>
+<ul>
+<li>example.sql</li>
+<li>sphinx.conf.dist</li>
+<li>sphinx-min.conf.dist</li>
+</ul>
+<p>其中example.sql是示例sql脚本我们将其导入到数据库中的test数据库中作为测试数据(会创建两张表documents和tags)</p>
+<pre><code>vi sphinx.conf  
+</code></pre><p>六.输入以下内容:</p>
+<pre><code>source src1     #&lt;span style=&quot;color:#000000;&quot;&gt;代表数据源里面主要包含了数据库的配置信息，&lt;span style=&quot;font-family:Calibri;&quot;&gt;src1&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;表示数据源名字&lt;/span&gt;&lt;span style=&quot;font-family:Calibri;&quot;&gt;,&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;可以随便写。&lt;/span&gt;&lt;/span&gt;  
+{  
+    type                    = mysql  
+    sql_host                = 192.168.214.128  
+    sql_user                = root  
+    sql_pass                = root  
+    sql_db                  = test  
+    sql_port                = 3306  # optional, default is 3306  
+    sql_sock                              = /tmp/mysql.sock  
+    sql_query_pre = SET NAMES utf8  
+    sql_query               = SELECT id, group_id, UNIX_TIMESTAMP(date_added) AS date_added, title, content FROM documents  
+    sql_attr_uint           = group_id  
+    sql_attr_timestamp      = date_added  
+    sql_query_info          = SELECT * FROM documents WHERE id=$id  
+}  
+index test1      #&lt;span style=&quot;color:#000000;&quot;&gt;代表为哪个数据源创建索引&lt;span style=&quot;font-family:Calibri;&quot;&gt;,&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;与&lt;/span&gt;&lt;span style=&quot;font-family:Calibri;&quot;&gt;source *** &lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;是成对出现的，其中的&lt;/span&gt;&lt;span style=&quot;font-family:Calibri;&quot;&gt;source&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;参数的值必须是某一个数据源的名字。&lt;/span&gt;&lt;/span&gt;  
+{  
+    source                  = src1  
+    path                    = /usr/local/coreseek/var/data/test1  
+    docinfo                 = extern  
+    charset_type            = zh_cn.utf-8  
+    mlock           = 0  
+    morphology      = none  
+    min_word_len        = 1  
+    html_strip      = 0  
+    charset_dictpath        = /usr/local/mmseg3/etc/  
+    ngram_len                    = 0  
+}  
+indexer  
+{  
+    mem_limit               = 32M  
+}  
+
+
+searchd  
+{  
+    port                    = 9312  
+    log                     = /usr/local/coreseek/var/log/searchd.log  
+    query_log               = /usr/local/coreseek/var/log/query.log  
+    read_timeout            = 5  
+    max_children            = 30  
+    pid_file                = /usr/local/coreseek/var/log/searchd.pid  
+    max_matches             = 1000  
+    seamless_rotate         = 1  
+    preopen_indexes         = 0  
+    unlink_old              = 1  
+}  
+</code></pre><p>其他参数可以查看手册，这里不再赘述。</p>
+<p>七.生成索引:</p>
+<pre><code>/usr/local/coreseek/bin/indexer -c /usr/local/coreseek/etc/sphinx.conf --all   #&lt;span style=&quot;color:#000000;&quot;&gt;其中参数&lt;span style=&quot;font-family:Calibri;&quot;&gt;--all&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;表示生成所有索引&lt;/span&gt;&lt;/span&gt;  
+</code></pre><p>当然也可以是索引的名字例如：/usr/local/coreseek/bin/indexer -c /usr/local/coreseek/etc/sphinx.conf test1</p>
+<p>八.执行后可以在/usr/local/coreseek/var/data目录中看到多出一些文件,是以索引名为文件名的不同的扩展名的文件</p>
+<p>在不启动sphinx的情况下即可测试命令:</p>
+<pre><code>&lt;p&gt;&lt;span style=&quot;color:#000000;&quot;&gt; /usr/local/coreseek/bin/search -c /usr/local/coreseek/etc/sphinx.conf number&lt;/span&gt;&lt;span style=&quot;color:#000000;&quot;&gt; &lt;span style=&quot;font-family:Calibri;&quot;&gt; #&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt; 这是开启&lt;/span&gt;&lt;span style=&quot;font-family:Calibri;&quot;&gt;sphinx&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;的命令行搜索就是说 &lt;/span&gt;&lt;span style=&quot;font-family:Calibri;&quot;&gt;number&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;是你要查询的数据名称&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color:#000000;&quot;&gt; /usr/local/coreseek/bin/searchd -c /usr/local/coreseek/etc/sphinx.conf&lt;span style=&quot;font-family:Calibri;&quot;&gt;                # &lt;/span&gt;searchd&lt;span style=&quot;font-family:宋体;&quot;&gt;是开启&lt;/span&gt;&lt;span style=&quot;font-family:Calibri;&quot;&gt;sphinx&lt;/span&gt;&lt;span style=&quot;font-family:宋体;&quot;&gt;的搜索服务功能&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;  
+</code></pre><p>九.在站点域名目录下创建一个文件列如test.PHP</p>
+<p>在test.php文件中写入如下内容:   (注意与test同级需要将本身的sphinxapi类加载进来)</p>
+<pre><code>&lt;?php  
+header(&quot;content-type:text/html;charset=utf8&quot;);  
+include&apos;./sphinxapi.php&apos;;  
+$sphinx= new SphinxClient();  
+$sphinx-&gt;SetServer  //(&apos;你linux上的ip地址&apos;,9312);  
+$res=$sphinx-&gt;Query(&quot;搜索字段&quot;,&quot;*&quot;);  //这里的*代表匹配所有定义好的规则  
+print_r($res);  
+?&gt;  
+</code></pre>
       
     </div>
 
@@ -434,8 +527,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/12/14/php/2014-12-14 WebRtc学习资料大全/" rel="next" title="WebRtc学习资料大全">
-                <i class="fa fa-chevron-left"></i> WebRtc学习资料大全
+              <a href="/2014/12/21/php/2014-12-21 递归实现无限极分类/" rel="next" title="递归实现无限极分类">
+                <i class="fa fa-chevron-left"></i> 递归实现无限极分类
               </a>
             
           </div>
@@ -443,6 +536,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/01/04/php/2015-01-04 php使用mysql数据库/" rel="prev" title="php使用mysql数据库">
+                php使用mysql数据库 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -505,7 +602,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -735,113 +832,6 @@
 
 
   
-
-  
-  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
-  <script>AV.initialize("c7zjIJGynOGIO7TGFutkhgQP-gzGzoHsz", "W6mSoBuzpKF1kgOYVUsukis6");</script>
-  <script>
-    function showTime(Counter) {
-      var query = new AV.Query(Counter);
-      var entries = [];
-      var $visitors = $(".leancloud_visitors");
-
-      $visitors.each(function () {
-        entries.push( $(this).attr("id").trim() );
-      });
-
-      query.containedIn('url', entries);
-      query.find()
-        .done(function (results) {
-          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
-
-          if (results.length === 0) {
-            $visitors.find(COUNT_CONTAINER_REF).text(0);
-            return;
-          }
-
-          for (var i = 0; i < results.length; i++) {
-            var item = results[i];
-            var url = item.get('url');
-            var time = item.get('time');
-            var element = document.getElementById(url);
-
-            $(element).find(COUNT_CONTAINER_REF).text(time);
-          }
-          for(var i = 0; i < entries.length; i++) {
-            var url = entries[i];
-            var element = document.getElementById(url);
-            var countSpan = $(element).find(COUNT_CONTAINER_REF);
-            if( countSpan.text() == '') {
-              countSpan.text(0);
-            }
-          }
-        })
-        .fail(function (object, error) {
-          console.log("Error: " + error.code + " " + error.message);
-        });
-    }
-
-    function addCount(Counter) {
-      var $visitors = $(".leancloud_visitors");
-      var url = $visitors.attr('id').trim();
-      var title = $visitors.attr('data-flag-title').trim();
-      var query = new AV.Query(Counter);
-
-      query.equalTo("url", url);
-      query.find({
-        success: function(results) {
-          if (results.length > 0) {
-            var counter = results[0];
-            counter.fetchWhenSave(true);
-            counter.increment("time");
-            counter.save(null, {
-              success: function(counter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(counter.get('time'));
-              },
-              error: function(counter, error) {
-                console.log('Failed to save Visitor num, with error message: ' + error.message);
-              }
-            });
-          } else {
-            var newcounter = new Counter();
-            /* Set ACL */
-            var acl = new AV.ACL();
-            acl.setPublicReadAccess(true);
-            acl.setPublicWriteAccess(true);
-            newcounter.setACL(acl);
-            /* End Set ACL */
-            newcounter.set("title", title);
-            newcounter.set("url", url);
-            newcounter.set("time", 1);
-            newcounter.save(null, {
-              success: function(newcounter) {
-                var $element = $(document.getElementById(url));
-                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
-              },
-              error: function(newcounter, error) {
-                console.log('Failed to create');
-              }
-            });
-          }
-        },
-        error: function(error) {
-          console.log('Error:' + error.code + " " + error.message);
-        }
-      });
-    }
-
-    $(function() {
-      var Counter = AV.Object.extend("Counter");
-      if ($('.leancloud_visitors').length == 1) {
-        addCount(Counter);
-      } else if ($('.post-title-link').length > 1) {
-        showTime(Counter);
-      }
-    });
-  </script>
-
-
 
   
 
